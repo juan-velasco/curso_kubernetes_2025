@@ -1,0 +1,104 @@
+NAME: mi-release
+LAST DEPLOYED: Wed Jun 29 19:34:40 2022
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+HOOKS:
+---
+# Source: 20-ejercicio-helm/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "ejercicio-helm-test-connection"
+  labels:
+    helm.sh/chart: 20-ejercicio-helm-0.1.0
+    app.kubernetes.io/name: 20-ejercicio-helm
+    app.kubernetes.io/instance: mi-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['ejercicio-helm:80']
+  restartPolicy: Never
+MANIFEST:
+---
+# Source: 20-ejercicio-helm/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ejercicio-helm
+  labels:
+    helm.sh/chart: 20-ejercicio-helm-0.1.0
+    app.kubernetes.io/name: 20-ejercicio-helm
+    app.kubernetes.io/instance: mi-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: 20-ejercicio-helm
+    app.kubernetes.io/instance: mi-release
+---
+# Source: 20-ejercicio-helm/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ejercicio-helm
+  labels:
+    helm.sh/chart: 20-ejercicio-helm-0.1.0
+    app.kubernetes.io/name: 20-ejercicio-helm
+    app.kubernetes.io/instance: mi-release
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: 20-ejercicio-helm
+      app.kubernetes.io/instance: mi-release
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: 20-ejercicio-helm
+        app.kubernetes.io/instance: mi-release
+    spec:
+      serviceAccountName: ejercicio-helm
+      securityContext:
+        {}
+      containers:
+        - name: 20-ejercicio-helm
+          securityContext:
+            {}
+          image: "nginx:1.16.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /mi-path
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /mi-path
+              port: http
+          resources:
+            {}
+
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=20-ejercicio-helm,app.kubernetes.io/instance=mi-release" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace default $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace default port-forward $POD_NAME 8080:$CONTAINER_PORT

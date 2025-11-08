@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ejemplo-statefulset
+spec:
+  selector:
+    matchLabels:
+      app: ejemplo-statefulset
+  serviceName: mi-app-ejemplo
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ejemplo-statefulset
+    spec:
+      containers:
+      - name: mi-app-ejemplo
+        image: busybox
+        args:
+        - sleep
+        - infinity
+        volumeMounts:
+        - mountPath: /data
+          name: ejemplo-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: ejemplo-pvc
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+#      storageClassName: do-block-storage
