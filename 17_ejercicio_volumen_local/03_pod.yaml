@@ -12,10 +12,6 @@ spec:
             operator: In
             values:
             - active
-  volumes:
-    - name: task-pv-storage
-      persistentVolumeClaim:
-        claimName: task-pv-claim
   containers:
     - name: task-pv-container
       image: nginx
@@ -29,3 +25,7 @@ spec:
         limits:
           memory: "64Mi"
           cpu: "250m"       
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+        claimName: task-pv-claim          

@@ -4,12 +4,12 @@ metadata:
   name: task-pv-volume
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
+  storageClassName: standard
   local:
     path: /mnt/data
   nodeAffinity:
