@@ -3,15 +3,6 @@ kind: Pod
 metadata:
   name: task-pv-pod-cloud
 spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: storage
-            operator: In
-            values:
-            - active
   volumes:
     - name: task-pv-storage
       persistentVolumeClaim:
